@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+    <style>
+        html, body {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        .main-content {
+            width: 100%;
+        }
+
+        #map-container {
+            position: relative;
+            max-width: 1240px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        #map {
+            position: relative;
+            overflow: hidden;
+            height:500px;
+            width: 100%;
+        }
+
+        .locations {
+            width: 100%;
+            height: auto;
+            bottom: 0;
+            left: 0;
+            padding: 20px;
+            background-color: white;
+        }
+
+        input.search {
+            margin-bottom: 1rem;
+        }
+
+        @media only screen and (min-width: 1030px) {
+            #map {
+                height: 725px;
+            }
+
+            .locations {
+                margin: 20px;
+                position: absolute;
+                width: 30%;
+                top: 0;
+                left: 0;
+            }
+        }
+
+    </style>
+  </head>
+  <body>
+      <article class="main-content">
+          <div id="map-container">
+              <div id="map"></div>
+
+              <div class="locations">
+                  <h2>EBAC Sites</h2>
+
+                      <input type="search" class="search"
+                          placeholder="(Search name)"
+                          data-bind="textInput: nameSearch, event: {keyup: filterMarkers}">
+
+                    <table>
+                      <tbody data-bind="foreach: visibleLocations">
+                        <td data-bind="text: name"></td>
+
+                      </tbody>
+                    </table>
+                </div>
+
+        </div>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIymQItMbuDdGdWhcLXlu-tzO_LF5xAHg"></script>
+
+        <script type='text/javascript' src='knockout-3.4.1.js'></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src="app.js"></script>
+
+      </article>
+  </body>
+</html>
