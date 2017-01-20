@@ -266,21 +266,19 @@ var ViewModel = function() {
 function queryNYTimes(location) {
     var $nytHeader = $('.article-heading');
     var $nytArticle = $('.nytimes-article');
-    var nytimesUrl = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' + city + '&sort=newest&api-key=42319605f44f49bba54758d38711077f';
+    var nytimesUrl = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' + location.city + '&sort=newest&api-key=42319605f44f49bba54758d38711077f';
     $.ajax({
         url: nytimesUrl,
-        dataType: "json",
-        success: function(data) {
-            articles = data.response.docs;
+        dataType: "json"})
+        .done(function(result) {
+            articles = result.response.docs;
             var article = articles[0];
                 location.content += '<h4>' + article.headline.main + '</h4><p>' + article.snippet + '</p>';
                 infowindow.setContent(location.content);
                 infowindow.open(map, location.marker);
 
-        },
-        error: function(e) {
+        })
+        .fail(function(error) {
             $nytHeader.text('The most recent New York Times article for' + city + ' could not be loaded.');
-        },
-        return :false,
-    });
+        });
 }
