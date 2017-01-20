@@ -122,10 +122,12 @@ var styles = [
     }
 ];
 
-// create global variables
+// Create global variables
 var infowindow, map;
 
+// once google maps api loads, run this initMap function
 var initMap = function() {
+
     infowindow = new google.maps.InfoWindow();
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 37.808221, lng: -122.306422},
@@ -137,15 +139,12 @@ var initMap = function() {
     map.setOptions({styles: styles});
 
     ko.applyBindings(new ViewModel());
-
 }
 
+// ERror handling
 function googleError() {
     $('#map-container').html('<p>Unfortunately, the map can not be loaded at this time.</p>');
 }
-
-// create variable for infowindows used for markers
-// var infowindow = new google.maps.InfoWindow();
 
 // view model for the app
 var ViewModel = function() {
@@ -153,21 +152,6 @@ var ViewModel = function() {
     'use strict';
 
     var self = this;
-
-    // create the map and store as self.googleMap
-    // self.googleMap = new google.maps.Map(document.getElementById('map'), {
-    //     center: {lat: 37.808221, lng: -122.306422},
-    //     zoom: 11,
-    //     mapTypeControl: false
-    // });
-
-
-
-    // error handling if google map doesn't load
-    // if (typeof google === 'object' && typeof google.maps === 'object') {
-    //
-    // } else {
-    // }
 
     // create array that will store all the locations
     self.allLocations = [];
@@ -192,14 +176,11 @@ var ViewModel = function() {
         google.maps.event.addListener(location.marker, 'click', function() {
 
             location.content = '<h2>' + location.name + '</h2><p>' + location.address + '<br>' + location.city + ', CA ' + location.zipcode + '</p><p>' + location.services + '</p><h3 class="article-heading">Latest NYTimes article referencing ' + location.city + '</h3><p class="nytimes-article"></p>';
-//
             location.marker.setAnimation(google.maps.Animation.BOUNCE);
 
             setTimeout(function() { // stop bouncing of marker
                 location.marker.setAnimation(null)
             }, 2100);
-
-            // infowindow.open(self.googleMap, this);
 
             // call function that displays article referencing location city
             queryNYTimes(location);
@@ -244,8 +225,8 @@ var ViewModel = function() {
         });
     };
 
+    // when location is clicked on filterlist, run this function to open up corresponding marker
     self.markerInfo = function(location) {
-        // console.log(location);
         google.maps.event.trigger(location.marker, 'click');
     }
 
@@ -279,6 +260,6 @@ function queryNYTimes(location) {
 
         })
         .fail(function(error) {
-            $nytHeader.text('The most recent New York Times article for' + city + ' could not be loaded.');
+            $nytHeader.text('The most recent New York Times article for' + location.city + ' could not be loaded.');
         });
 }
