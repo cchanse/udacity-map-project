@@ -197,7 +197,7 @@ var ViewModel = function() {
 
             setTimeout(function() { // stop bouncing of marker
                 location.marker.setAnimation(null)
-            }, 1000);
+            }, 2100);
 
             // infowindow.open(self.googleMap, this);
 
