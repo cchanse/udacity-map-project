@@ -122,8 +122,29 @@ var styles = [
     }
 ];
 
-// create variable for infowindows used for markers
-var infowindow = new google.maps.InfoWindow();
+// Create global variables
+var infowindow, map;
+
+// once google maps api loads, run this initMap function
+var initMap = function() {
+
+    infowindow = new google.maps.InfoWindow();
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 37.808221, lng: -122.306422},
+        zoom: 11,
+        mapTypeControl: false
+    });
+
+    // set styles for the map
+    map.setOptions({styles: styles});
+
+    ko.applyBindings(new ViewModel());
+}
+
+// ERror handling
+function googleError() {
+    $('#map-container').html('<p>Unfortunately, the map can not be loaded at this time.</p>');
+}
 
 // view model for the app
 var ViewModel = function() {
@@ -131,23 +152,6 @@ var ViewModel = function() {
     'use strict';
 
     var self = this;
-
-    // create the map and store as self.googleMap
-    self.googleMap = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 37.808221, lng: -122.306422},
-        zoom: 11,
-        mapTypeControl: false
-    });
-
-    // set styles for the map
-    self.googleMap.setOptions({styles: styles});
-
-    // error handling if google map doesn't load
-    if (typeof google === 'object' && typeof google.maps === 'object') {
-
-    } else {
-        $('#map-container').html('<p>Unfortunately, the map can not be loaded at this time.</p>')
-    }
 
     // create array that will store all the locations
     self.allLocations = [];
@@ -161,7 +165,7 @@ var ViewModel = function() {
     self.allLocations.forEach(function(location) {
 
         var markerOptions = {
-            map: self.googleMap,
+            map: map,
             position: location.latLng,
             animation: google.maps.Animation.DROP
         };
@@ -171,23 +175,20 @@ var ViewModel = function() {
         // content loaded into infowindow when marker clicked
         google.maps.event.addListener(location.marker, 'click', function() {
 
-            infowindow.setContent('<h2>' + location.name + '</h2><p>' + location.address + '<br>' + location.city + ', CA ' + location.zipcode + '</p><p>' + location.services + '</p><h3 class="article-heading">Latest NYTimes article referencing ' + location.city + '</h3><p class="nytimes-article"></p>');
-
+            location.content = '<h2>' + location.name + '</h2><p>' + location.address + '<br>' + location.city + ', CA ' + location.zipcode + '</p><p>' + location.services + '</p><h3 class="article-heading">Latest NYTimes article referencing ' + location.city + '</h3><p class="nytimes-article"></p>';
             location.marker.setAnimation(google.maps.Animation.BOUNCE);
 
             setTimeout(function() { // stop bouncing of marker
                 location.marker.setAnimation(null)
-            }, 1000);
-
-            infowindow.open(self.googleMap, this);
+            }, 2100);
 
             // call function that displays article referencing location city
-            queryNYTimes(location.city);
+            queryNYTimes(location);
 
         });
 
         // when user clicks on map outside of marker, close infowindow
-        google.maps.event.addListener(self.googleMap, 'click', function(){
+        google.maps.event.addListener(map, 'click', function(){
             infowindow.close();
         });
     });
@@ -224,6 +225,12 @@ var ViewModel = function() {
         });
     };
 
+    // when location is clicked on filterlist, run this function to open up corresponding marker
+    self.markerInfo = function(location) {
+        google.maps.event.trigger(location.marker, 'click');
+    }
+
+
     // constructor function that creates a prototype, Location. Objects of this type will be created for each location as the array of locations change according to search parameters.  Each object of this type will have the following initialized properties (name, latLng, services, address, city, zipcode, and marker
     function Location(obj) {
         this.name = obj.name;
@@ -237,23 +244,22 @@ var ViewModel = function() {
 };
 
 // define function for NYTimes API requests. Pass the city of the selected marker as a query parameter so only articles that reference that city will be retrieved
-function queryNYTimes(city) {
+function queryNYTimes(location) {
     var $nytHeader = $('.article-heading');
     var $nytArticle = $('.nytimes-article');
-    var nytimesUrl = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' + city + '&sort=newest&api-key=42319605f44f49bba54758d38711077f';
+    var nytimesUrl = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' + location.city + '&sort=newest&api-key=42319605f44f49bba54758d38711077f';
     $.ajax({
         url: nytimesUrl,
-        dataType: "json",
-        success: function(data) {
-            articles = data.response.docs;
+        dataType: "json"})
+        .done(function(result) {
+            articles = result.response.docs;
             var article = articles[0];
-                $nytArticle.html('<h4>' + article.headline.main + '</h4><p>' + article.snippet + '</p>');
-        },
-        error: function(e) {
-            $nytHeader.text('The most recent New York Times article for' + city + ' could not be loaded.');
-        },
-        return :false,
-    });
-}
+                location.content += '<h4>' + article.headline.main + '</h4><p>' + article.snippet + '</p>';
+                infowindow.setContent(location.content);
+                infowindow.open(map, location.marker);
 
-ko.applyBindings(new ViewModel());
+        })
+        .fail(function(error) {
+            $nytHeader.text('The most recent New York Times article for' + location.city + ' could not be loaded.');
+        });
+}
