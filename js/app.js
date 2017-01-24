@@ -251,8 +251,34 @@ var ViewModel = function() {
     self.nameSearch = ko.observable();
 
     // show location markers that match the search input (either by name, city or services)
-    self.filterMarkers = function() {
-        var searchInput = self.nameSearch().toLowerCase();
+    // self.filterMarkers = function() {
+    //     var searchInput = self.nameSearch().toLowerCase();
+    //
+    //     self.visibleLocations.removeAll();
+    //
+    //     self.allLocations.forEach(function(location) {
+    //
+    //         // only want to show markers that meet the criteria
+    //         location.marker.setVisible(false);
+    //
+    //         if ( (location.name.toLowerCase().indexOf(searchInput) !== -1) || (location.services.toLowerCase().indexOf(searchInput) !== -1) || (location.city.toLowerCase().indexOf(searchInput) !== -1)) {
+    //             self.visibleLocations.push(location); // we store locations that meet critiera into an array that we then iterate through to set visibility to true
+    //         }
+    //
+    //     });
+    //
+    //     self.visibleLocations().forEach(function(location) {
+    //         location.marker.setVisible(true);
+    //     });
+    // };
+
+    self.filterText = ko.observable('');
+
+
+    self.filter = ko.computed(function() {
+        /* self.filter will automatically invoke when input's value changes */
+
+        var searchInput = self.filterText().toLowerCase();
 
         self.visibleLocations.removeAll();
 
@@ -270,7 +296,9 @@ var ViewModel = function() {
         self.visibleLocations().forEach(function(location) {
             location.marker.setVisible(true);
         });
-    };
+        /* Filter implementation goes in here */
+    }, this) ;
+
 
     // when location is clicked on filterlist, run this function to open up corresponding marker
     self.markerInfo = function(location) {

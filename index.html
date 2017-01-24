@@ -18,7 +18,16 @@
                   <main>
                       <input type="search" class="search"
                           placeholder="(Search name)"
-                          data-bind="textInput: nameSearch, event: {keyup: filterMarkers}">
+                          data-bind="textInput: filterText">
+
+                          <!-- update foreach binding -->
+<ul data-bind="foreach: filter">
+    <li><span data-bind="text: $data.name, click: $parent.markerInfo"></span></li>
+
+</ul>
+                      <!-- <input type="search" class="search"
+                          placeholder="(Search name)"
+                          data-bind="textInput: nameSearch, event: {keyup: filterMarkers}"> -->
                     <table>
                       <tbody data-bind="foreach: visibleLocations">
                         <td data-bind="text: name, click: $parent.markerInfo"></td>
