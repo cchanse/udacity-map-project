@@ -141,20 +141,11 @@ var initMap = function() {
     ko.applyBindings(new ViewModel());
 }
 
-// var googleError = function() {
-//     var test = new ViewModel();
-//     ko.applyBindings(test);
-//     test.errorMsg('test')
-//
-// }
-// ERror handling
-// function googleError() {
-//     $('#map-container').html('<p>Unfortunately, the map can not be loaded at this time.</p>');
-// }
-//
-// var googleError = function() {
-//     self.errorMsg('Unfortunately, the map can not be loaded at this time.');
-// }
+// Error handling
+function googleError() {
+    alert('<p>Unfortunately, the map can not be loaded at this time.</p>');
+}
+
 // constructor function that creates a prototype, Location. Objects of this type will be created for each location as the array of locations change according to search parameters.  Each object of this type will have the following initialized properties (name, latLng, services, address, city, zipcode, and marker
 function Location(obj) {
     this.name = obj.name;
@@ -172,17 +163,6 @@ var ViewModel = function() {
     'use strict';
 
     var self = this;
-
-    // self.errorMsg = ko.observable(); // Initially blank
-    //
-    // function googleError() {
-    //     self.errorMsg("hello, world!");
-    // }
-
-
-    // function googleError() {
-    //     self.errorMsg('Unfortunately, the map can not be loaded at this time.');
-    // }
 
     // create array that will store all the locations
     self.allLocations = [];
@@ -224,13 +204,7 @@ var ViewModel = function() {
                 location.marker.setAnimation(null)
             }, 2100);
 
-            // https://discussions.udacity.com/t/handling-ajax-errors/198087/2
-            // call function that displays article referencing location city
             queryNYTimes(location);
-
-            // self.apiTimeout = setTimeout(function() {
-            //     alert('ERROR: Failed to load data');
-            // }, 5000);
 
         });
 
@@ -248,35 +222,11 @@ var ViewModel = function() {
         self.visibleLocations.push(location);
     });
 
-    self.nameSearch = ko.observable();
-
-    // show location markers that match the search input (either by name, city or services)
-    // self.filterMarkers = function() {
-    //     var searchInput = self.nameSearch().toLowerCase();
-    //
-    //     self.visibleLocations.removeAll();
-    //
-    //     self.allLocations.forEach(function(location) {
-    //
-    //         // only want to show markers that meet the criteria
-    //         location.marker.setVisible(false);
-    //
-    //         if ( (location.name.toLowerCase().indexOf(searchInput) !== -1) || (location.services.toLowerCase().indexOf(searchInput) !== -1) || (location.city.toLowerCase().indexOf(searchInput) !== -1)) {
-    //             self.visibleLocations.push(location); // we store locations that meet critiera into an array that we then iterate through to set visibility to true
-    //         }
-    //
-    //     });
-    //
-    //     self.visibleLocations().forEach(function(location) {
-    //         location.marker.setVisible(true);
-    //     });
-    // };
-
     self.filterText = ko.observable('');
 
 
+    // when input changes, run this function
     self.filter = ko.computed(function() {
-        /* self.filter will automatically invoke when input's value changes */
 
         var searchInput = self.filterText().toLowerCase();
 
@@ -327,6 +277,5 @@ function queryNYTimes(location) {
         })
         .fail(function(error) {
             alert("Unable to load NYTimes API at this time");
-            // $nytHeader.text('The most recent New York Times article for' + location.city + ' could not be loaded.');
         });
 }
