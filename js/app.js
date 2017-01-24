@@ -155,7 +155,16 @@ var initMap = function() {
 // var googleError = function() {
 //     self.errorMsg('Unfortunately, the map can not be loaded at this time.');
 // }
-
+// constructor function that creates a prototype, Location. Objects of this type will be created for each location as the array of locations change according to search parameters.  Each object of this type will have the following initialized properties (name, latLng, services, address, city, zipcode, and marker
+function Location(obj) {
+    this.name = obj.name;
+    this.latLng = obj.latLng;
+    this.services = obj.services;
+    this.address = obj.address;
+    this.city = obj.city;
+    this.zipcode = obj.zipcode;
+    this.marker = null;
+}
 
 // view model for the app
 var ViewModel = function() {
@@ -269,16 +278,7 @@ var ViewModel = function() {
     }
 
 
-    // constructor function that creates a prototype, Location. Objects of this type will be created for each location as the array of locations change according to search parameters.  Each object of this type will have the following initialized properties (name, latLng, services, address, city, zipcode, and marker
-    function Location(obj) {
-        this.name = obj.name;
-        this.latLng = obj.latLng;
-        this.services = obj.services;
-        this.address = obj.address;
-        this.city = obj.city;
-        this.zipcode = obj.zipcode;
-        this.marker = null;
-    }
+
 };
 
 // define function for NYTimes API requests. Pass the city of the selected marker as a query parameter so only articles that reference that city will be retrieved
