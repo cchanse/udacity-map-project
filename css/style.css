@@ -1,0 +1,52 @@
+html,
+body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+.main-content {
+    width: 100%;
+}
+
+#map-container {
+    position: relative;
+    max-width: 1240px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+#map {
+    position: relative;
+    overflow: hidden;
+    height:500px;
+    width: 100%;
+}
+
+.locations {
+    width: 100%;
+    height: auto;
+    bottom: 0;
+    left: 0;
+    padding: 20px;
+    background-color: white;
+}
+
+.search {
+    margin-bottom: 1rem;
+}
+
+@media only screen and (min-width: 1030px) {
+    #map {
+        height: 725px;
+    }
+
+    .locations {
+        margin: 20px;
+        position: absolute;
+        width: 30%;
+        top: 0;
+        left: 0;
+    }
+}

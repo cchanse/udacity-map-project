@@ -1,13 +1,16 @@
 /* I found this codepen that MCS shared on the Udacity discussion forum (https://discussions.udacity.com/t/linking-the-ko-filter-to-the-markers-le-sigh/35771/2) to be very helpful: http://codepen.io/prather-mcs/pen/KpjbNN?editors=0010#0
 */
 
+// Create global variables
+var infowindow, map;
+
 // array of EBAC sites
 var locations = [
     {name: "Administrative Office", address:"303 Van Buren Ave", city: "Oakland", zipcode: "94610", phone:"510-268-3770", latLng: {lat: 37.810924, lng: -122.256157}, services: "Administrative" },
 
     {name: "Bancroft Counseling Enriched Program", address:"1150 Bancroft Ave.", city: "San Leandro", zipcode: "94577", phone: "510-504-0115", latLng: {lat: 37.727952, lng:  -122.147723}, services: "After-school"},
 
-    {name: "Fremont Healthy Start (Fremont)", latLng: {lat: 37.807709, lng: -122.266436}, lat: 37.807709, lng: -122.266436, services: "Counseling", city: "Oakland"},
+    {name: "Fremont Healthy Start", zipcode: '', latLng: {lat: 37.807709, lng: -122.266436}, lat: 37.807709, lng: -122.266436, services: "Counseling", city: "Oakland"},
 
     {name: "SBBH Services at Glassbrook Elementary", address: "975 Shafer Road", zipcode: 94544, latLng: {lat: 37.641056, lng: -122.079810}, services: "South Region School Based Behavioral Health Services, Counseling", city: "Hayward"},
 
@@ -27,9 +30,9 @@ var locations = [
 
     {name: "SBBH Services at Fremont Durham Elementary", address: "40292 Leslie St.", zipcode: 94545, latLng: {lat: 37.542378, lng: -121.966316}, services: "After-school",city: "Fremont"},
 
-    {name: "Alameda", latLng: {lat: 37.708221, lng: -122.206422}, lat: 37.208221, lng: -122.406422, services: "Counseling",city: "Alameda"},
+    {name: "Alameda", zipcode: '', latLng: {lat: 37.708221, lng: -122.206422}, lat: 37.208221, lng: -122.406422, services: "Counseling",city: "Alameda"},
 
-    {name: "Other", latLng: {lat: 37.708221, lng: -122.206422}, lat: 37.108221, lng: -122.606422, services: "Counseling",city: "San Leandro"}
+    {name: "Other", zipcode: '', latLng: {lat: 37.708221, lng: -122.206422}, lat: 37.108221, lng: -122.606422, services: "Counseling",city: "San Leandro"}
 ];
 
 // customize the styles for the Google map
@@ -122,9 +125,6 @@ var styles = [
     }
 ];
 
-// Create global variables
-var infowindow, map;
-
 // once google maps api loads, run this initMap function
 var initMap = function() {
 
@@ -141,10 +141,21 @@ var initMap = function() {
     ko.applyBindings(new ViewModel());
 }
 
+// var googleError = function() {
+//     var test = new ViewModel();
+//     ko.applyBindings(test);
+//     test.errorMsg('test')
+//
+// }
 // ERror handling
-function googleError() {
-    $('#map-container').html('<p>Unfortunately, the map can not be loaded at this time.</p>');
-}
+// function googleError() {
+//     $('#map-container').html('<p>Unfortunately, the map can not be loaded at this time.</p>');
+// }
+//
+// var googleError = function() {
+//     self.errorMsg('Unfortunately, the map can not be loaded at this time.');
+// }
+
 
 // view model for the app
 var ViewModel = function() {
@@ -152,6 +163,17 @@ var ViewModel = function() {
     'use strict';
 
     var self = this;
+
+    // self.errorMsg = ko.observable(); // Initially blank
+    //
+    // function googleError() {
+    //     self.errorMsg("hello, world!");
+    // }
+
+
+    // function googleError() {
+    //     self.errorMsg('Unfortunately, the map can not be loaded at this time.');
+    // }
 
     // create array that will store all the locations
     self.allLocations = [];
@@ -175,6 +197,17 @@ var ViewModel = function() {
         // content loaded into infowindow when marker clicked
         google.maps.event.addListener(location.marker, 'click', function() {
 
+            map.panTo(location.marker.getPosition());
+            if (location.services === undefined) {
+                location.services = 'No services currently listed';
+            } else if (location.address === undefined) {
+                location.address = 'No address currently listed';
+            } else if (location.zipcode === undefined) {
+                location.zipcode = 'No zipcode currently listed';
+            } else {
+
+            }
+
             location.content = '<h2>' + location.name + '</h2><p>' + location.address + '<br>' + location.city + ', CA ' + location.zipcode + '</p><p>' + location.services + '</p><h3 class="article-heading">Latest NYTimes article referencing ' + location.city + '</h3><p class="nytimes-article"></p>';
             location.marker.setAnimation(google.maps.Animation.BOUNCE);
 
@@ -182,8 +215,13 @@ var ViewModel = function() {
                 location.marker.setAnimation(null)
             }, 2100);
 
+            // https://discussions.udacity.com/t/handling-ajax-errors/198087/2
             // call function that displays article referencing location city
             queryNYTimes(location);
+
+            // self.apiTimeout = setTimeout(function() {
+            //     alert('ERROR: Failed to load data');
+            // }, 5000);
 
         });
 
@@ -260,6 +298,7 @@ function queryNYTimes(location) {
 
         })
         .fail(function(error) {
-            $nytHeader.text('The most recent New York Times article for' + location.city + ' could not be loaded.');
+            alert("Unable to load NYTimes API at this time");
+            // $nytHeader.text('The most recent New York Times article for' + location.city + ' could not be loaded.');
         });
 }
